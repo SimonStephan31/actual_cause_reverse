@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Demo Exp</title>
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/plugin-html-button-response.js"></script>
+    <script src="jspsych/plugin-survey-multi-choice.js"></script>
+    <script src="jspsych/plugin-survey-likert.js"></script>
+    <script src="jspsych/plugin-html-slider-response.js"></script>
+	<script src="jspsych/plugin-image-keyboard-response.js"></script>
+	<script src="jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/plugin-preload.js"></script>
+    <script src="jspsych/plugin-survey-text.js"></script>
+    <script src="jspsych/plugin-fullscreen.js"></script>
+    <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+  
+// run study with ?demo=true at the end of url to have the demo mode
+
+
+var jsPsych = initJsPsych({
+  experiment_width: 1100,
+  on_finish: function(){
+    window.location = "https://app.prolific.com/submissions/complete?cc=C1MNBMBF"
+  }
+});
+
+
+//var condition = CONDITION; 
+var condition;
+
+jsPsych.data.addProperties({condition: +condition});
+
+var subj_code;
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
+subj_code = makeid(12);
+
+console.log(subj_code);
+
+jsPsych.data.addProperties({subj_code: subj_code});
+
+
+
+/* create timeline */
+var timeline = [];
+
+/* preload images */
+var preload = {
+  type: jsPsychPreload,
+  images: ['img/uni_org_color_li.png']
+}
+timeline.push(preload);
+
+var styles = `
+  p {
+    text-align: justify
+  }
+  
+`
+var styleSheet = document.createElement("style")
+styleSheet.type = "text/css"
+styleSheet.innerText = styles
+document.head.appendChild(styleSheet)
+
+
+//////////////////////// images in the different conditions
+
+var irreversible_text = `Once the purple light goes on, it cannot be turned off at all -- even by turning off the switches.`; 
+var reversible_text = `Once the purple light goes on, it can be turned off by turning off the switches.`; 
+
+
+console.log(condition)
+
+
+
+//////////////////////////////////////////////////////
+/* Condition selection (just for offline demo) */
+
+var select = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+		prompt: 
+		`
+		<p><b>Select a condition: type in a number between 1 and 4.</b></p>
+    <p>
+      - 1 and 2: replication part (1 = irreversible; 2 = reversible)<br>
+      - 3 and 4: novel part (3 = irreversible; 4 = reversible)
+    </p>
+		`, 
+		placeholder: 'number between 1 and 4',
+		required: true,
+		name: 'CondSel',
+	},
+  ],
+	on_finish: function(data){
+	condition = data.response.CondSel,
+	console.log(condition);
+	} 
+}
+timeline.push(select);
+
+
+
+//////////////////////////////////////////////////////
+/* Instructions ( all conditions)  */
+var cond_selected = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+    return "You chose to see Condition "+condition;
+		},
+    choices: ['Continue']
+};
+timeline.push(cond_selected);
+
+
+var enter_fullscreen = {
+  type: jsPsychFullscreen,
+  message: "<p><center><b>Please note</b>: The experiment will switch to full screen mode when you continue.</center></p>",
+  fullscreen_mode: true
+}
+
+//timeline.push(enter_fullscreen);
+
+
+
+
+//////////////////////////////////////////////////////
+/* Confirmations */
+var confs = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "This study works properly only on Desktop PCs and Laptops, and not on Smartphones or Tablets. Before you proceed, please confirm that you take part via Desktop PC or Laptop.", 
+      name: 'DesktopConf', 
+      options: ['1: I confirm', '2: I do not confirm'], 
+      required: true
+    }, 
+    {
+      prompt: "For the scientific utility of the results, it is very important that you provide complete and careful responses. How seriously will you take your participation in the study?", 
+      name: 'AttentConf', 
+      options: ['1: I will take it seriously', '2: I will not take it seriously'], 
+      required: true
+    }, 
+  ],
+  on_finish: function(data){
+      if (condition == 1) {
+        structure = "irreversible";
+        structure_prompt = irreversible_text;
+        test_queries = "original";
+      } else if (condition == 2) {
+        structure = "reversible";
+        structure_prompt = reversible_text;
+        test_queries = "original";
+      } else if (condition == 3) {
+        structure = "irreversible";
+        structure_prompt = irreversible_text;
+        test_queries = "novel";
+      } else if (condition == 4) {
+        structure = "reversible";
+        structure_prompt = reversible_text;
+        test_queries = "novel";
+      };
+	    jsPsych.data.addProperties({desktop_conf: data.response.DesktopConf, attent_conf: data.response.AttentConf, structure: structure, test_queries: test_queries});
+      console.log(structure);
+    },
+  preamble: `
+              <p><img src="img/uni_org_color_li.png" width = 100%></img></p>
+              <p><b>Welcome to this experiment and thank you very much for your participation.</b></p>
+              <p>Please note: This study contains memory and comprehension checks with which we aim to ensure that you correctly understood the central aspects of the study.</p>
+            `
+};
+timeline.push(confs);
+
+
+
+// general intro 
+var intro = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: 
+    `
+    <p><b>Before you proceed, please note:</b></p>
+  
+    <p>On the next screen, you're going to read a fictitious scenario that we use to study our research question. 
+      Please try to understand the scenario well, as the questions we're going to ask you rely on your understanding of the scenario
+    </p>
+
+    <p><i>If you're focused and feel ready to begin, please click "Continue" to proceed to the scenario.</i></p>
+    `
+    ,
+    choices: ['Continue']
+};
+timeline.push(intro);
+
+
+var likert_scale_test = [
+  "Strongly disagree","" ,"" ,"" ,"" ,"", "", "","Strongly agree"
+];
+
+var test_replication = {
+  type: jsPsychSurveyLikert,
+  questions: [
+    {prompt: "The purple light was on at 4:00PM because the red switch turned on.", name: 'first_caused', labels: likert_scale_test, required: true},
+    {prompt: "The purple light was on at 4:00PM because the blue switch turned on.", name: 'second_caused', labels: likert_scale_test, required: true},
+  ],
+  randomize_question_order: true,
+  preamble: function() {
+    return `                 
+    <p>
+      <i>Please read the following fictitious scenario thoroughly and then answer the question below:</i>
+    </p>
+    <p>
+      David designed a special light with two switches: a red switch and a blue switch.
+    </p>
+    <p>
+      If either switch was turned on, a purple light would turn on.
+    </p>
+    <p>
+      `+structure_prompt+`
+    </p>
+    <p>
+      At the exact same moment, David set timers so that the red switch and the blue switch will each turn on sometime today.
+    </p>
+    <p>
+      At 1:00PM, the red switch turned on, so the purple light turned on. 
+      At 2:00PM, the blue switch turned on. 
+      Nothing else changed, so at 4:00PM the purple light was still on.
+    </p>
+    <p>
+      <i>Now that you've read the scenario, please answer the following question:</i>
+    </p>
+    <p><b>To what extent do you agree with the following statements about the passage you just read?</b></p>
+    `
+  },
+  on_finish: function(data){
+	  jsPsych.data.addProperties({first_caused_rating: data.response.first_caused, second_caused_rating: data.response.second_caused,
+      first_maintained_rating: "na", second_maintained_rating: "na"});
+  },
+};
+
+
+var test_novel = {
+  type: jsPsychSurveyLikert,
+  questions: [
+    {prompt: "The red switch turning on at 1:00PM caused the purple light to turn on.", name: 'first_caused', labels: likert_scale_test, required: true},
+    {prompt: "The blue switch turning on at 2:00PM caused the purple light to turn on.", name: 'second_caused', labels: likert_scale_test, required: true},
+    {prompt: "At 4:00PM, the red switch being on is keeping the purple light burning.", name: 'first_maintained', labels: likert_scale_test, required: true},
+    {prompt: "At 4:00Pm, the blue switch being on is keeping the purple light burning.", name: 'right_maintained', labels: likert_scale_test, required: true},
+  ],
+  randomize_question_order: true,
+  preamble: function() {
+    return `                 
+    <p>
+      <i>Please read the following fictitious scenario thoroughly and then answer the question below:</i>
+    </p>
+    <p>
+      David designed a special light with two switches: a red switch and a blue switch.
+    </p>
+    <p>
+      If either switch was turned on, a purple light would turn on.
+    </p>
+    <p>
+      `+structure_prompt+`
+    </p>
+    <p>
+      At the exact same moment, David set timers so that the red switch and the blue switch will each turn on sometime today.
+    </p>
+    <p>
+      At 1:00PM, the red switch turned on, so the purple light turned on. 
+      At 2:00PM, the blue switch turned on. 
+      Nothing else changed, so at 4:00PM the purple light was still on.
+    </p>
+    <p>
+      <i>Now that you've read the scenario, please answer the following question:</i>
+    </p>
+    <p><b>To what extent do you agree with the following statements about the passage you just read?</b></p>
+    `
+  },
+  on_finish: function(data){
+	  jsPsych.data.addProperties({first_caused_rating: data.response.first_caused, second_caused_rating: data.response.second_caused, 
+      first_maintained_rating: data.response.first_maintained, second_maintained_rating: data.response.second_maintained});
+  },
+};
+
+
+
+var replication = {
+  timeline: [test_replication],
+  conditional_function: function () {
+    if (condition >= 1 && condition <= 2) {
+      return true; 
+    } else {
+      return false;
+    }
+  }
+}
+
+var novel = {
+  timeline: [test_novel],
+  conditional_function: function () {
+    if (condition >= 2) {
+      return true; 
+    } else {
+      return false;
+    }
+  }
+}
+
+timeline.push(replication, novel);
+
+
+
+/////////////////////////////////////// explanation
+var explan = {
+  type: jsPsychSurveyText,
+  name: 'Free_explan',
+  questions: [
+    {prompt: `We'd now like to learn a little bit more about the judgment you just made. Please use the text field below to give a short explanation for your rating.`, 
+    rows: 10, 
+    columns: 100, 
+    required: false,
+    name: 'Explanation'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({explanation: data.response.Explanation});
+  },
+}
+//timeline.push(explan);
+
+
+
+//////////////////////////////////////////////////////
+/* Memory Checks */
+var mem_check = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "In the scenario about the switches and the light you just read, once the purple light goes on, can it be turned off by turning off the switches?", 
+      name: 'Timing_check', 
+      options: ['Yes.', 
+                'No.'], 
+      required: true
+    }, 
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({timing_check: data.response.Timing_check});
+  },
+  preamble: "<b>Please answer this additional question:</b>"
+};
+timeline.push(mem_check);
+
+
+
+
+/////////////////////////////////////// demographics
+var demogr_age = {
+  type: jsPsychSurveyText,
+  name: 'Age_query',
+  questions: [
+    {prompt: 'How old are you?', 
+    placeholder: 'Age as a number', 
+    required: true,
+    name: 'Age'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({age: data.response.Age});
+  },
+}
+
+
+
+var demogr_gender = {
+  type: jsPsychSurveyMultiChoice,
+  name: 'gender_query',
+  questions: [
+    {
+      prompt: "Please indicate with which gender you identify.", 
+      options: ['1: male', '2: female', '3: non-binary', '4: prefer not to say'],
+      required: true,
+      name: 'Gender'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({gender: data.response.Gender});
+  },
+};
+timeline.push(demogr_age, demogr_gender);
+
+
+
+
+/////////////////////////////////////// technical issues
+var tech_issues = {
+  type: jsPsychSurveyText,
+  name: 'Tech_issue_query',
+  questions: [
+    {prompt: 'In the text field below you can report any errors that you came across during the study (e.g., technical issues, layout problems, spelling errors, errors in program logic and flow, etc.).', 
+    rows: 10, 
+    columns: 100, 
+    required: false,
+    name: 'Tech_issue_report'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({tech_issues: data.response.Tech_issue_report});
+	  console.log(data.response.Tech_issue_report)
+  },
+}
+timeline.push(tech_issues);
+
+///////////////////////////////////// debriefing
+
+var debriefing = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: 
+    `
+    <img src="img/uni_org_color_li.png" width = 100%></img>
+    <p><b>Thank you for taking part in this study!</b></p>
+  
+    <p>The aim of this experiment is to find out more about how people reason about causal claims. 
+    If you are interested in further details or if you have any questions or comments concerning the experiment, 
+    feel free to contact me (Simon Stephan) under <i>sstepha1@uni-goettingen.de</i>
+    
+    <p>To ensure you receive your reward, please click the button below to return to the Prolific website:</p>
+    `
+    ,
+    choices: ['Finish study']
+};
+timeline.push(debriefing);
+
+
+
+/////////////////////////////////////////////////////////////////
+/* start the experiment */
+    jsPsych.run(timeline);
+
+  
+  </script>
+</html>

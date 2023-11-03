@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Demo Exp</title>
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/plugin-html-button-response.js"></script>
+    <script src="jspsych/plugin-survey-multi-choice.js"></script>
+    <script src="jspsych/plugin-survey-likert.js"></script>
+    <script src="jspsych/plugin-html-slider-response.js"></script>
+	<script src="jspsych/plugin-image-keyboard-response.js"></script>
+	<script src="jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/plugin-preload.js"></script>
+    <script src="jspsych/plugin-survey-text.js"></script>
+    <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+  
+// run study with ?demo=true at the end of url to have the demo mode
+
+
+var jsPsych = initJsPsych({
+  experiment_width: 1000,
+  on_finish: function(){
+    window.location = "https://app.prolific.com/submissions/complete?cc=C1MNBMBF"
+  }
+});
+
+
+//var condition = CONDITION; 
+var condition;
+
+jsPsych.data.addProperties({condition: +condition});
+
+var subj_code;
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
+subj_code = makeid(12);
+
+console.log(subj_code);
+
+jsPsych.data.addProperties({subj_code: subj_code});
+
+
+
+/* create timeline */
+var timeline = [];
+
+/* preload images */
+var preload = {
+  type: jsPsychPreload,
+  images: ['img/uni_org_color_li.png']
+}
+timeline.push(preload);
+
+var styles = `
+  p {
+    text-align: justify
+  }
+  
+`
+var styleSheet = document.createElement("style")
+styleSheet.type = "text/css"
+styleSheet.innerText = styles
+document.head.appendChild(styleSheet)
+
+
+//////////////////////// images in the different conditions
+
+
+
+var irreversible_red = ["irreversible_test_red.webm"]; 
+var irreversible_yellow = ["irreversible_test_yellow.webm"]; 
+
+var reversible_red = ["reversible_test_red.webm"]
+var reversible_yellow = ["reversible_test_yellow.webm"]
+
+var learn_clip_red;
+var learn_clip_yellow;
+
+console.log(condition)
+
+var clip;
+var claim;
+
+
+
+//////////////////////////////////////////////////////
+/* Condition selection (just for offline demo) */
+
+var select = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+		prompt: 
+		`
+		<p><b>Select a condition: type in a number between 1 and 4.</b></p>
+    <p>
+      - 1 and 2: irreversible structure (1 = red as first case, 2 = yellow as first cause)<br>
+      - 3 and 4: irreversible structure (3 = red as first case, 4 = yellow as first cause)
+    </p>
+		`, 
+		placeholder: 'number between 1 and 4',
+		required: true,
+		name: 'CondSel',
+	},
+  ],
+	on_finish: function(data){
+	condition = data.response.CondSel,
+	console.log(condition);
+	} 
+}
+timeline.push(select);
+
+
+
+//////////////////////////////////////////////////////
+/* Instructions ( all conditions)  */
+var cond_selected = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+    return "You chose to see Condition "+condition;
+		},
+    choices: ['Continue']
+};
+timeline.push(cond_selected);
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+/* Confirmations */
+var confs = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "This study works properly only on Desktop PCs and Laptops, and not on Smartphones or Tablets. Before you proceed, please confirm that you take part via Desktop PC or Laptop.", 
+      name: 'DesktopConf', 
+      options: ['1: I confirm', '2: I do not confirm'], 
+      required: true
+    }, 
+    {
+      prompt: "For the scientific utility of the results, it is very important that you provide complete and careful responses. How seriously will you take your participation in the study?", 
+      name: 'AttentConf', 
+      options: ['1: I will take it seriously', '2: I will not take it seriously'], 
+      required: true
+    }, 
+  ],
+  on_finish: function(data){
+      if (condition == 1) {
+        structure = "irreversible";
+        first_object = "red";
+        test_clip = irreversible_red;
+        learn_clip_red = "irreversible_learning_red.webm";
+        learn_clip_yellow = "irreversible_learning_yellow.webm";
+        illu_pic = "scene_illu_irreversible.png"
+      } else if (condition == 2) {
+        structure = "irreversible";
+        first_object = "yellow";
+        test_clip = irreversible_yellow;
+        learn_clip_red = "irreversible_learning_red.webm";
+        learn_clip_yellow = "irreversible_learning_yellow.webm";
+        illu_pic = "scene_illu_irreversible.png"
+      } else if (condition == 3) {
+        structure = "reversible";
+        first_object = "red";
+        test_clip = reversible_red;
+        learn_clip_red = "reversible_learning_red.webm";
+        learn_clip_yellow = "reversible_learning_yellow.webm";
+        illu_pic = "scene_illu_reversible.png"
+      } else if (condition == 4) {
+        structure = "reversible";
+        first_object = "yellow";
+        test_clip = reversible_yellow;
+        learn_clip_red = "reversible_learning_red.webm";
+        learn_clip_yellow = "reversible_learning_yellow.webm";
+        illu_pic = "scene_illu_reversible.png"
+      };
+	    jsPsych.data.addProperties({desktop_conf: data.response.DesktopConf, attent_conf: data.response.AttentConf, intro_check: data.response.Intro_Clip, structure: structure, first_object: first_object, test_clip: test_clip});
+      console.log(structure, first_object, learn_clip_red, learn_clip_yellow, illu_pic);
+    },
+  preamble: `
+              <p><img src="img/uni_org_color_li.png" width = 100%></img></p>
+              <p><b>Welcome to this experiment and thank you very much for your participation.</b></p>
+              <p>Please note: This study contains memory and comprehension checks with which we aim to ensure that you correctly understood the central aspects of the study.</p>
+            `
+};
+timeline.push(confs);
+
+
+
+
+//////////////////////////////////////////////////////
+/* Instructions ( all conditions) */
+var welcome = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: 
+      `
+        <p>On the next screens, we will show you a couple of short video clips. Please watch the demo video on this screen and answer the check question below. 
+          We use this check question to ensure that you are able to view the video clips.</p>
+        
+        <p>To start a video clip you have to click on the <b><i>PLAY button</i></b> that is displayed in the lower left corner of the video.</p>
+
+        <p>In case you're not seeing the <b><i>PLAY button</i></b>, go into the lower left corner with your mouse. This should make the button appear.</p>
+        
+        <p>
+          <video width="1000" controls>
+            <source src="img/intro.webm" type="video/webm">
+            Your browser does not support the video tag.
+          </video>
+        </p>
+        
+        <p>Please select the option below that correctly describes what happened in the video clip.</p>
+      `, 
+      name: 'Intro_Clip', 
+      options: ['1: A yellow ball lies on a brown wooden board. Then a green ball falls down onto the wooden board. The yellow ball then shoots into the air.',
+                '2: A green ball lies on a brown wooden board. Then a yellow ball falls down onto the wooden board. The green ball then shoots into the air.',
+                '3: A green ball lies on a silver iron board. Then a yellow ball falls down onto the iron board. The green ball then shoots into the air.',
+                '4: A yellow ball lies on a silver iron board. Then a green ball falls down onto the iron board. The yellow ball then shoots into the air.'], 
+      required: true
+    }, 
+  ],
+  on_finish: function(data){
+	    jsPsych.data.addProperties({intro_check: data.response.Intro_Clip});
+    },
+  preamble: "<b>Video check:</b>"
+};
+timeline.push(welcome);
+
+
+
+/////////////////////////////////////////////////////////
+/* Instructions medicines (all conditions) */
+var instruction = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function() {return `
+    <p>
+      <i>Please read the following instruction thoroughly:</i>
+    </p>
+    <p>
+      This study tests how people intuitively understand dynamic events unfolding in simple physical scenarios. 
+    </p>
+    <p>
+      You're going to see short video clips of a physical scene in which certain things happen. 
+      A static picture illustrating the kind of situation and the objects involved is shown below.
+      Please study the picture thoroughly, but don't think too much about what the general purpose of this arrangement of things in the picture might be; there is none. 
+      We simply use this it to study our research question.
+    </p>
+      
+    <p><img src="img/`+illu_pic+`" width = 100%></img></p>
+
+    <p>
+      The first few clips that you're going to see on the following screens will allow you to learn how the different parts of the machine behave. 
+      We will ask you a question after each clip to see how you interpreted the depicted scene. 
+      Once you've understood the machine, we'll show you a final video clip. 
+      You will be asked to say how adequately different sentences describe/ summarize what happened in that clip. 
+    </p>
+    <p>
+      <i>Please note</i>: You can watch all clips as often as you like, and we're always interested in your intuitive understanding.
+    </p>
+    <p>
+      <i>If you feel ready to start, please click "Continue" to proceed.</i>
+    </p>
+    <br>
+    `
+  },
+    choices: ['Continue']
+}
+timeline.push(instruction);
+
+
+/////////////////////////////// learning clips 
+
+var learning_red = {
+  type: jsPsychSurveyMultiChoice,
+  name: 'learning_red',
+  questions: [
+    { 
+      prompt: "Please select the option below that correctly describes what happened in the clip you've just seen.",
+      options: ['1: When the red ram returned to its initial position, the wooden block remained in the blue area.', 
+                '2: When the red ram returned to its initial position, the wooden block also went back (left the blue area again).'],
+      required: true,
+      name: 'learn_check_red'
+    },
+  ],
+  preamble: function() {return `
+    <p><b><i>Please watch the video clip below and then answer the question.</i></b><p>
+        <p>
+          <video width="1000" controls>
+            <source src="img/`+learn_clip_red+`" type="video/webm">
+            Your browser does not support the video tag.
+          </video>
+        </p>
+    `},
+  on_finish: function(data){
+	  jsPsych.data.addProperties({learn_check_red: data.response.learn_check_red});
+  },
+};
+
+var learning_yellow = {
+  type: jsPsychSurveyMultiChoice,
+  name: 'learning_yellow',
+  questions: [
+    { 
+      prompt: "Please select the option below that correctly describes what happened in the clip you've just seen.",
+      options: ['1: When the yellow ram returned to its initial position, the wooden block remained in the blue area.', 
+                '2: When the yellow ram returned to its initial position, the wooden block also went back (left the blue area again).'],
+      required: true,
+      name: 'learn_check_yellow'
+    },
+  ],
+  preamble: function() {return `
+      <p><b><i>Please watch the video clip below and then answer the question.</i></b><p>
+        <p>
+          <video width="1000" controls>
+            <source src="img/`+learn_clip_yellow+`" type="video/webm">
+            Your browser does not support the video tag.
+          </video>
+        </p>
+    `},
+  on_finish: function(data){
+	  jsPsych.data.addProperties({learn_check_yellow: data.response.learn_check_yellow});
+  },
+};
+
+var learn_check_order = [learning_red, learning_yellow];
+
+var learn_check_shuffled = jsPsych.randomization.repeat(learn_check_order, 1);
+
+timeline.push(learn_check_shuffled[0], learn_check_shuffled[1]);
+
+
+
+
+////////////////////////////// Instructing the Decision Situation 
+
+
+/////////////////////////////////////////////////////////
+/* Instructions medicines (all conditions) */
+var instruction_test = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus:[
+    `
+    <p>
+      The purpose of the previous videos was to make you familiar with the kind of physical situation we're studying. On the next screen, we'll show you the final video.
+      Please make sure that you watch the video clip thoroughly before you answer the test questions.
+    </p>
+    `],
+    choices: ['Continue']
+}
+timeline.push(instruction_test);
+
+
+
+var likert_scale_test = [
+  "Completely inadequate","" ,"" ,"" ,"" ,"", "", "", "", "","Completely adequate"
+];
+
+var test = {
+  type: jsPsychSurveyLikert,
+  questions: [
+    {prompt: "The red ram caused the wooden block to go into the blue area.", name: 'red_caused', labels: likert_scale_test, required: true},
+    {prompt: "The yellow ram caused the wooden block to go into the blue area.", name: 'yellow_caused', labels: likert_scale_test, required: true},
+    {prompt: "The red ram made the wooden block stay in the blue area for a while.", name: 'red_maintained', labels: likert_scale_test, required: true},
+    {prompt: "The yellow ram made the wooden block stay in the blue area for a while.", name: 'yellow_maintained', labels: likert_scale_test, required: true},
+  ],
+  randomize_question_order: true,
+  preamble: function() {
+    return `                 
+        <p><i><b>Please watch the clip below and then answer the questions below:</b></i></p>
+
+        <p>
+          <video width="1000" controls>
+            <source src="img/`+test_clip+`" type="video/webm">
+            Your browser does not support the video tag.
+          </video>
+        </p>
+
+        <p><b>How adequate is each of the following sentences to describe what happened in the clip you've just seen?</b></p>
+    `
+  },
+  on_finish: function(data){
+	  jsPsych.data.addProperties({red_caused_rating: data.response.red_caused, yellow_caused_rating: data.response.yellow_caused, 
+      red_maintained_rating: data.response.red_maintained, yellow_maintained_rating: data.response.yellow_maintained});
+  },
+};
+
+timeline.push(test);
+
+
+
+
+/////////////////////////////////////// explanation
+var explan = {
+  type: jsPsychSurveyText,
+  name: 'Free_explan',
+  questions: [
+    {prompt: `We'd now like to learn a little bit more about the judgment you just made. Please use the text field below to give a short explanation for your rating.`, 
+    rows: 10, 
+    columns: 100, 
+    required: false,
+    name: 'Explanation'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({explanation: data.response.Explanation});
+  },
+}
+//timeline.push(explan);
+
+
+
+//////////////////////////////////////////////////////
+/* Memory Checks */
+var mem_check = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "In the last video you saw, what is true about the order in which the rams began to move.", 
+      name: 'Timing_check', 
+      options: ['The red ram moved first.', 
+                'The yellow ram moved first.'], 
+      required: true
+    }, 
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({timing_check: data.response.Timing_check});
+  },
+  preamble: "<b>Please answer this additional question:</b>"
+};
+timeline.push(mem_check);
+
+
+
+
+/////////////////////////////////////// demographics
+var demogr_age = {
+  type: jsPsychSurveyText,
+  name: 'Age_query',
+  questions: [
+    {prompt: 'How old are you?', 
+    placeholder: 'Age as a number', 
+    required: true,
+    name: 'Age'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({age: data.response.Age});
+  },
+}
+
+
+
+var demogr_gender = {
+  type: jsPsychSurveyMultiChoice,
+  name: 'gender_query',
+  questions: [
+    {
+      prompt: "Please indicate with which gender you identify.", 
+      options: ['1: male', '2: female', '3: non-binary', '4: prefer not to say'],
+      required: true,
+      name: 'Gender'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({gender: data.response.Gender});
+  },
+};
+timeline.push(demogr_age, demogr_gender);
+
+
+
+
+/////////////////////////////////////// technical issues
+var tech_issues = {
+  type: jsPsychSurveyText,
+  name: 'Tech_issue_query',
+  questions: [
+    {prompt: 'In the text field below you can report any errors that you came across during the study (e.g., technical issues, layout problems, spelling errors, errors in program logic and flow, etc.).', 
+    rows: 10, 
+    columns: 100, 
+    required: false,
+    name: 'Tech_issue_report'
+    },
+  ],
+  on_finish: function(data){
+	  jsPsych.data.addProperties({tech_issues: data.response.Tech_issue_report});
+	  console.log(data.response.Tech_issue_report)
+  },
+}
+timeline.push(tech_issues);
+
+///////////////////////////////////// debriefing
+
+var debriefing = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: 
+    `
+    <img src="img/uni_org_color_li.png" width = 100%></img>
+    <p><b>Thank you for taking part in this study!</b></p>
+  
+    <p>The aim of this experiment is to find out more about how people reason about causal claims. 
+    If you are interested in further details or if you have any questions or comments concerning the experiment, 
+    feel free to contact me (Simon Stephan) under <i>sstepha1@uni-goettingen.de</i>
+    
+    <p>To ensure you receive your reward, please click the button below to return to the Prolific website:</p>
+    `
+    ,
+    choices: ['Finish study']
+};
+timeline.push(debriefing);
+
+
+
+/////////////////////////////////////////////////////////////////
+/* start the experiment */
+    jsPsych.run(timeline);
+
+  
+  </script>
+</html>
