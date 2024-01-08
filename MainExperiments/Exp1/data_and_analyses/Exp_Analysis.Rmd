@@ -32,9 +32,16 @@ font_add_google("Roboto Mono", "Roboto Mono")
 showtext_auto()
 ```
 
+Read in the data:
 
 ```{r}
 tdata <- read_csv("exp_data.csv")
+```
+
+Remove participants who failed the timing check query:
+
+```{r}
+tdata <- subset(tdata, timing_check_correct == "correct")
 ```
 
 
@@ -240,6 +247,44 @@ confint(s, level = 0.95)
 ```
 First cause receives higher ratings in both reversibility conditions. 
 
+Get effect standardized effect sizes for the contrasts
+
+```{r}
+# using the d.dep.t.avg function from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
+
+library(MOTE)
+
+# from the contrast outputs above, get the SDs for pre and post. 
+
+# irreversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+stats <- d.dep.t.avg(
+  m1 = 6.80,
+  m2 = 1.36,
+  sd1 = 0.464 * sqrt(50),
+  sd2 = 0.596 * sqrt(50),
+  n = 50,
+  a = 0.05
+)
+
+stats$estimate
+```
+
+```{r}
+# reversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+stats <- d.dep.t.avg(
+  m1 = 6.92,
+  m2 = 3.24,
+  sd1 = 0.464 * sqrt(50),
+  sd2 = 0.596 * sqrt(50),
+  n = 50,
+  a = 0.05
+)
+
+stats$estimate
+```
+
 
 # Novel part of the study 
 
@@ -443,6 +488,60 @@ confint(s, level = 0.95)
 The planned contrasts from this list are "first caused - second caused" in each reversibility condition. They are both significant. 
 
 
+Get effect sizes for the relevant contrasts
+
+```{r}
+# irreversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+stats <- d.dep.t.avg(
+  m1 = 7.70,
+  m2 = 0.76,
+  sd1 = 0.213 * sqrt(100),
+  sd2 = 0.380 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
+
+```{r}
+# reversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+stats <- d.dep.t.avg(
+  m1 = 7.44,
+  m2 = 1.94,
+  sd1 = 0.213 * sqrt(100),
+  sd2 = 0.380 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
+
+In the paper I also say that maintainer ratings for the first cause are higher in the reversible than in the irreversible condition. An effect size for this is given by: 
+
+```{r}
+# structure    entity             lsmean    SE df lower.CL upper.CL
+# irreversible first..maintained    2.74 0.464 98  1.81965     3.66
+# reversible   first..maintained    5.44 0.464 98  4.51965     6.36
+ 
+stats <- d.dep.t.avg(
+  m1 = 5.44,
+  m2 = 2.74,
+  sd1 = 0.464 * sqrt(100),
+  sd2 = 0.464 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+ 
+```
+
+
+
 The other planned contrast is the one comparing the maintainer ratings between the two reversibility conditions. The following code will produce a long list of comparisons, from which the relevant one will be "second..maintained irreversible - second..maintained reversible"
 
 
@@ -457,4 +556,24 @@ confint(s, level = 0.95)
 
 The relevant contrast "second..maintained irreversible - second..maintained reversible" is significant
 
+Get a d value for this one too: 
+
+
+```{r}
+# structure    entity             lsmean    SE df lower.CL upper.CL
+# irreversible second..maintained   2.24 0.471 98  1.30472     3.18
+# reversible   second..maintained   5.12 0.471 98  4.18472     6.06
+
+
+stats <- d.dep.t.avg(
+  m1 = 5.12,
+  m2 = 2.24,
+  sd1 = 0.471 * sqrt(100),
+  sd2 = 0.471 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
 

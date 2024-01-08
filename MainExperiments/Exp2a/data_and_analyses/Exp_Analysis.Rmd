@@ -38,6 +38,14 @@ tdata <- read_csv("exp_data.csv")
 ```
 
 
+```{r}
+# Exclude subjects who failed the control questions 
+tdata <- subset(tdata, intro_check == "2: A little squid swam from the right to the left.")
+tdata <- subset(tdata, timing_check_correct == "correct")
+tdata <- subset(tdata, learning_check_correct == "correct")
+```
+
+
 # Subject demographics
 
 ```{r}
@@ -343,6 +351,58 @@ confint(s, level = 0.95)
 
 The planned contrasts from the list above are " first..caused - second..caused" in both "irreversible" and "reversible". Both are significant.
 
+Get effect standardized effect sizes for the contrasts
+
+```{r}
+# using the d.dep.t.avg function from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
+
+library(MOTE)
+
+# from the contrast outputs above, get the SDs for pre and post. 
+
+# irreversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+
+#structure    entity             lsmean    SE df lower.CL upper.CL
+# irreversible first..caused        9.64 0.178 98    9.286     9.99
+# irreversible second..caused       0.92 0.408 98    0.110     1.73
+
+
+
+stats <- d.dep.t.avg(
+  m1 = 9.64,
+  m2 = 0.92,
+  sd1 = 0.178 * sqrt(100),
+  sd2 = 0.408 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
+
+```{r}
+# reversible condition 
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+
+#structure    entity             lsmean    SE df lower.CL upper.CL
+# reversible   first..caused        9.40 0.178 98    9.046     9.75
+# reversible   second..caused       2.74 0.408 98    1.930     3.55
+
+stats <- d.dep.t.avg(
+  m1 = 9.40,
+  m2 = 2.74,
+  sd1 = 0.178 * sqrt(100),
+  sd2 = 0.408 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
+
+
+
 The final planned contrast compares the maintainer ratings for the second cause in "irreversible" and "reversible". It must be looked up from the long list of contrasts below: 
 
 ```{r}
@@ -356,5 +416,25 @@ confint(s, level = 0.95)
 
 The relevant contrast is: "second..maintained irreversible - second..maintained reversible", which is significant. 
 
+Get effect size: 
 
+```{r}
+# reversible condition 
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+
+#structure    entity             lsmean    SE df lower.CL upper.CL
+#irreversible second..maintained   3.32 0.409 98    2.508     4.13
+#reversible   second..maintained   9.36 0.409 98    8.548    10.17
+
+stats <- d.dep.t.avg(
+  m1 = 9.36,
+  m2 = 3.32,
+  sd1 = 0.409 * sqrt(100),
+  sd2 = 0.409 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
 

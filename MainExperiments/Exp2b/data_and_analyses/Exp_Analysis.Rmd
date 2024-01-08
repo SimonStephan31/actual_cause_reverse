@@ -36,6 +36,16 @@ showtext_auto()
 tdata <- read_csv("exp_data.csv")
 ```
 
+Exclude subjects who failed at least one control questions 
+
+```{r}
+tdata <- subset(tdata, intro_check == "2: A green ball lies on a brown wooden board. Then a yellow ball falls down onto the wooden board. The green ball then shoots into the air.")
+
+tdata <- subset(tdata, timing_check_correct == "correct")
+tdata <- subset(tdata, learning_check_correct == "correct")
+```
+
+
 
 # Subject demographics
 
@@ -348,6 +358,58 @@ confint(s, level = 0.95)
 Planned contrasts in the list above are "first caused - second caused" in each reversibility condition. Both are significant. 
 
 
+Get effect standardized effect sizes for the contrasts
+
+```{r}
+# using the d.dep.t.avg function from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
+
+library(MOTE)
+
+# from the contrast outputs above, get the SDs for pre and post. 
+
+# irreversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+
+#structure    statement          lsmean    SE df lower.CL upper.CL
+# irreversible first..caused        9.62 0.131 98    9.361     9.88
+# irreversible second..caused       1.16 0.420 98    0.327     1.99
+
+
+
+stats <- d.dep.t.avg(
+  m1 = 9.62,
+  m2 = 1.16,
+  sd1 = 0.131 * sqrt(100),
+  sd2 = 0.420 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
+```{r}
+
+# reversible condition
+# sds required for function can be obtained by multiplying the SE with the square root of the sample size
+
+#structure    statement          lsmean    SE df lower.CL upper.CL
+# reversible   first..caused        9.80 0.131 98    9.541    10.06
+# reversible   second..caused       1.86 0.420 98    1.027     2.69
+
+
+
+stats <- d.dep.t.avg(
+  m1 = 9.80,
+  m2 = 1.86,
+  sd1 = 0.131 * sqrt(100),
+  sd2 = 0.420 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
+
 
 Now contrast testing the maintainer ratings in each reversibility condition. The code below will produce a long list from which the correct contrast must be looked up.
 
@@ -360,4 +422,27 @@ s
 confint(s, level = 0.95)
 ```
 
-The planned contrast from this list is the one comparing the maintainer ratings between the reversibility conditions: "second..maintained irreversible - second..maintained reversible", which is significant. 
+The planned contrast from this list is the one comparing the maintainer ratings between the reversibility conditions: "second..maintained irreversible - second..maintained reversible", which is significant.
+
+
+Get effect size 
+
+```{r}
+
+#structure    statement          lsmean    SE df lower.CL upper.CL
+#irreversible second..maintained   3.60 0.485 98    2.638     4.56
+# reversible   second..maintained   7.94 0.485 98    6.978     8.90
+
+
+
+stats <- d.dep.t.avg(
+  m1 = 7.94,
+  m2 = 3.60,
+  sd1 = 0.485 * sqrt(100),
+  sd2 = 0.485 * sqrt(100),
+  n = 100,
+  a = 0.05
+)
+
+stats$estimate
+```
