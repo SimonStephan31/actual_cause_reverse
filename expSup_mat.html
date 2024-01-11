@@ -11,7 +11,7 @@
 
 
 
-<title>Experiment 2a</title>
+<title>Supplementary Study</title>
 
 <script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -366,7 +366,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Experiment 2a</h1>
+<h1 class="title toc-ignore">Supplementary Study</h1>
 
 </div>
 
@@ -381,40 +381,54 @@ body {
 <h2><font style="color:lightgrey;"> Stimuli </font></h1>
 -->
 <p><br></p>
+<p>This study replicated Experiment 2a in a between subjects-design (see
+details below). Another goal was to have more parallelized phrasings of
+the trigger and maintainer statements.</p>
 <hr />
 <div id="demo-version-of-experiment" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Demo Version of
 Experiment</h1>
 <p>To see a demo of the experiment in a separate browser window, click
-<a href="MainExperiments/Exp2a/experiment_files/task_local_demo/Exp_demo.html" target="_blank">here</a>.</p>
+<a href="SuppStudy/experiment_files/task_local_demo/Exp_demo.html" target="_blank">here</a>.</p>
 <p>To download the program files of the experiment, click <a
-href="MainExperiments/Exp2a/experiment_files.zip">here</a>.</p>
+href="SuppStudy/experiment_files.zip">here</a>.</p>
 <p>To download the program files for the animations, click <a
-href="MainExpeirment/Exp2a/animations_squids.zip">here</a>.</p>
+href="SuppStudy/animations_squids.zip">here</a>.</p>
 <hr />
 </div>
-<div id="pre-registration" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Pre-Registration</h1>
-<p>The OSF pre-registration can be accessed <a
-href="https://osf.io/2x7yw">here</a>.</p>
+<div id="test-planning" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Test planning</h1>
+<p>The goal was to have <span class="math inline">\(n = 30\)</span>
+subjects in each of the 8 theoretically relevant conditions (including
+the “side” counterbalancing factor, there were 16 conditions in
+total).</p>
+<pre class="r"><code>library(pwr)</code></pre>
+<pre><code>## Warning: Paket &#39;pwr&#39; wurde unter R Version 4.2.3 erstellt</code></pre>
+<pre class="r"><code>pwr.t.test(n = 30, sig.level = 0.05, power = 0.8, type = c(&quot;two.sample&quot;), alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##      Two-sample t test power calculation 
+## 
+##               n = 30
+##               d = 0.649627
+##       sig.level = 0.05
+##           power = 0.8
+##     alternative = greater
+## 
+## NOTE: n is number in *each* group</code></pre>
+<p>With <span class="math inline">\(n = 30\)</span>, the effect that can
+be detected with <span class="math inline">\(0.80\)</span> power in a
+directed between-subjects t-test is <span class="math inline">\(d =
+0.65\)</span>.</p>
 <hr />
 </div>
-<div id="test-planning-a-priori-power-analysis" class="section level1"
-number="3">
-<h1><span class="header-section-number">3</span> Test planning (a priori
-power analysis)</h1>
-<p>see pre-registration.</p>
-<hr />
-</div>
-<div id="data" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Data</h1>
+<div id="data" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Data</h1>
 <ul>
-<li><a
-href="MainExperiments/Exp2a/data_and_analyses/exp_data.zip">Download
+<li><a href="SuppStudy/data_and_analyses/exp_data.zip">Download
 Experimental data</a> [.csv-file; delimiter = “,”]</li>
 </ul>
-<div id="data-set-information" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Data set
+<div id="data-set-information" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Data set
 information</h2>
 <p>The data set contains the following columns:</p>
 <ul>
@@ -430,18 +444,16 @@ question testing if subjects can see the clips</li>
 structure was reversible or irreversible</li>
 <li><strong>first_object</strong>: counterbalancing variable coding
 which cause appeared first</li>
+<li><strong>test_statement_type</strong>: factor coding what kind of
+test statement subjects will rate</li>
+<li><strong>test_statement</strong>: the exact test statement that
+subjects rated in the respective conditions</li>
 <li><strong>learn_check_left</strong>: (dv) subjects’ responses to the
 learning video in which the left cause acts alone</li>
 <li><strong>learn_check_right</strong>: (dv) subjects’ responses to the
 learning video in which the right cause acts alone</li>
-<li><strong>first_obj_caused_rating</strong>: subjects’ ratings for the
-trigger causal statement about the first cause (dv)</li>
-<li><strong>second_obj_caused_rating</strong>: subjects’ ratings for the
-trigger causal statement about second first cause (dv)</li>
-<li><strong>first_obj_maintained_rating</strong>: subjects’ ratings for
-the maintaining causal statement about the first cause (dv)</li>
-<li><strong>second_obj_maintained_rating</strong>: subjects’ ratings for
-the maintaining causal statement about the second cause (dv)</li>
+<li><strong>statement_rating</strong>: (dv) subjects’ ratings of the
+causal test statement</li>
 <li><strong>timing_check</strong>: check question probing subjects’
 understanding of the causal reversibility of the scenario</li>
 <li><strong>recorded_at</strong>: the date and time participants did the
@@ -463,35 +475,79 @@ checks (left and right) were answered correctly</li>
 <hr />
 </div>
 </div>
-<div id="analysis-script" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Analysis Script</h1>
+<div id="analysis-script" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Analysis Script</h1>
 <ul>
-<li><a
-href="MainExperiments/Exp2a/data_and_analyses/Exp_Analysis.Rmd">View
+<li><a href="SuppStudy/data_and_analyses/Exp_Analysis.Rmd">View
 R-Markdown code</a></li>
-<li><a
-href="MainExperiments/Exp2a/data_and_analyses/Exp_Analysis.zip">Download
+<li><a href="SuppStudy/data_and_analyses/Exp_Analysis.zip">Download
 R-Markdown code</a></li>
-<li><a
-href="MainExperiments/Exp2a/data_and_analyses/Exp_Analysis.html">View
+<li><a href="SuppStudy/data_and_analyses/Exp_Analysis.html">View
 knitted/ compiled R-Markdown</a> (web view of analysis)</li>
 </ul>
 <hr />
 </div>
-<div id="pilot-study" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> Pilot study</h1>
-<p>The pilot study tested N = 93 subjects and everything was exactly as
-in the main study. For further details about the sample and the results,
-see the analysis script linked below.</p>
-<hr />
-<div id="data-analysis-script-and-results" class="section level2"
-number="6.1">
-<h2><span class="header-section-number">6.1</span> Data, analysis
-script, and results</h2>
+<div id="summary" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Summary</h1>
+<div id="particiapnts" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Particiapnts</h2>
+<p>For details about the sample size demographics, see the analysis
+script <a
+href="SuppStudy/data_and_analyses/Exp_Analysis.html">here</a>.</p>
+</div>
+<div id="design-materials-and-procedure" class="section level2"
+number="5.2">
+<h2><span class="header-section-number">5.2</span> Design, materials,
+and procedure</h2>
+<p>The experimental scenario and procedure was the same as in
+Experiment~2a. The only difference was that subjects this time evaluated
+only one test statement (using the same rating scale as in
+Experiment~2a). The different test statements were:</p>
 <ul>
-<li><a href="MainExperiments/Exp2a/pilot.zip">Download Experimental
-data, analysis script, and results graphs</a></li>
+<li>“The left male turned the female purple.” [trigger statement]</li>
+<li>“The right male turned the female purple.” [trigger statement]</li>
+<li>“The left male kept the female purple.” [maintainer statement]</li>
+<li>“The right male kept the female purple.” [maintainer statement]</li>
 </ul>
+<p>Whether the left or the right male served as first cause/second cause
+was counterbalanced between subjects.</p>
+</div>
+<div id="results-and-discussion" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Results and
+discussion</h2>
+<p>For details about the analysis (means, CIs, significance test
+results, etc.) see the analysis script <a
+href="SuppStudy/data_and_analyses/Exp_Analysis.html">here</a>.</p>
+<p>Subjects ratings are summarized in the Figure below, where it can be
+seen that the supplementary experiment replicated the findings of the
+main experiments. When the causal structure was irreversible, the second
+cause received low ratings; it was neither regarded as a trigger nor as
+a maintainer. This changed when the causal structure was reversible. In
+the reversible case, the second cause still was not regarded as a
+trigger, but it received high maintainer ratings. The study thus
+corroborates the Ross-Woodward hypothesis, just like the main studies.
+An unpredicted finding were the relative high maintainer ratings for the
+first cause under the irreversible structure. This had already been
+observed in other experiments of the paper. It is an open question why
+subjects have the intuition that the first cause maintains the effect
+even though they learned that the effect would not disappear again
+anyway.</p>
+<p>The statistical analysis was analogous to the one of Experiment 2a
+(except that tests here were between-subjects tests; e.g.,
+between-subjects Anova and contrasts instead of mixed Anova etc.). The
+exact codes and test results can be found in the analysis script <a
+href="SuppStudy/data_and_analyses/Exp_Analysis.html">here</a>. The tests
+confirmed the predictions. In the ANOVA, there was a significant
+interaction effect between causal structure and test statement.
+Contrasts tested the difference between the trigger statements about the
+first and second cause in both causal structures. They were all
+significant. A final contrast tested if the maintainer ratings for the
+second cause were higher in the reversible case than in the irreversible
+case. This test was significant.</p>
+<p>In sum, this supplementary study replicates the previous studies and
+confirms the Ross-Woodward hypothesis.</p>
+<p><img
+src="SuppStudy/data_and_analyses/results_means_mainDV.svg" /></p>
 </div>
 </div>
 

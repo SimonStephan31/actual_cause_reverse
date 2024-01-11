@@ -105,13 +105,13 @@ var select = {
     {
 		prompt: 
 		`
-		<p><b>Select a condition: type in a number between 1 and 4.</b></p>
+		<p><b>Select a condition: type in a number between 1 and 16.</b></p>
     <p>
-      - 1 and 2: irreversible structure (1 = first cause is the left cause; 2 = first cause is the right cause)<br>
-      - 3 and 4: reversible structure (3 = first cause is the left cause; 4 = first cause is the right cause)
+      - 1 to 8: irreversible structure (1 to 4: first cause is the left cause; 5 to 8: first cause is the right cause; 1 = trigger first, 2 = trigger second, 3 = maintainer first, etc.)<br>
+      - 9 to 16: reversible structure (9 to 12: first cause is the left cause; 13 to 16: first cause is the right cause; 9 = trigger first, 10 = trigger second, 11 = maintainer first, etc.)
     </p>
 		`, 
-		placeholder: 'number between 1 and 4',
+		placeholder: 'number between 1 and 16',
 		required: true,
 		name: 'CondSel',
 	},
@@ -167,32 +167,138 @@ var confs = {
     }, 
   ],
   on_finish: function(data){
-      if (condition == 1) {
+      if (condition == 1) { // irreversible structure 
         structure = "irreversible";
         first_object = "left";
         test_clip = test_left;
         learn_clip_left = "irreversible_learning_left.html";
         learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "trigger_first";
+        test_statement = "The left male turned the female purple.";
       } else if (condition == 2) {
         structure = "irreversible";
+        first_object = "left";
+        test_clip = test_left;
+        learn_clip_left = "irreversible_learning_left.html";
+        learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "trigger_second";
+        test_statement = "The right male turned the female purple.";
+      } else if (condition == 3) {
+        structure = "irreversible";
+        first_object = "left";
+        test_clip = test_left;
+        learn_clip_left = "irreversible_learning_left.html";
+        learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "maintainer_first";
+        test_statement = "The left male kept the female purple.";
+      } else if (condition == 4) {
+        structure = "irreversible";
+        first_object = "left";
+        test_clip = test_left;
+        learn_clip_left = "irreversible_learning_left.html";
+        learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "maintainer_second";
+        test_statement = "The right male kept the female purple.";
+      } else if (condition == 5) {
+        structure = "irreversible";
         first_object = "right";
         test_clip = test_right;
         learn_clip_left = "irreversible_learning_left.html";
         learn_clip_right = "irreversible_learning_right.html";
-      } else if (condition == 3) {
+        test_statement_type = "trigger_first";
+        test_statement = "The right male turned the female purple.";
+      } else if (condition == 6) {
+        structure = "irreversible";
+        first_object = "right";
+        test_clip = test_right;
+        learn_clip_left = "irreversible_learning_left.html";
+        learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "trigger_second";
+        test_statement = "The left male turned the female purple.";
+      } else if (condition == 7) {
+        structure = "irreversible";
+        first_object = "right";
+        test_clip = test_right;
+        learn_clip_left = "irreversible_learning_left.html";
+        learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "maintainer_first";
+        test_statement = "The right male kept the female purple.";
+      } else if (condition == 8) {
+        structure = "irreversible";
+        first_object = "right";
+        test_clip = test_right;
+        learn_clip_left = "irreversible_learning_left.html";
+        learn_clip_right = "irreversible_learning_right.html";
+        test_statement_type = "maintainer_second";
+        test_statement = "The left male kept the female purple.";
+      } else if (condition == 9) {  // reversible structure
         structure = "reversible";
         first_object = "left";
         test_clip = test_left;
         learn_clip_left = "reversible_learning_left.html";
         learn_clip_right = "reversible_learning_right.html";
-      } else if (condition == 4) {
+        test_statement_type = "trigger_first";
+        test_statement = "The left male turned the female purple.";
+      } else if (condition == 10) {
+        structure = "reversible";
+        first_object = "left";
+        test_clip = test_left;
+        learn_clip_left = "reversible_learning_left.html";
+        learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "trigger_second";
+        test_statement = "The right male turned the female purple.";
+      } else if (condition == 11) {
+        structure = "reversible";
+        first_object = "left";
+        test_clip = test_left;
+        learn_clip_left = "reversible_learning_left.html";
+        learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "maintainer_first";
+        test_statement = "The left male kept the female purple.";
+      } else if (condition == 12) {
+        structure = "reversible";
+        first_object = "left";
+        test_clip = test_left;
+        learn_clip_left = "reversible_learning_left.html";
+        learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "maintainer_second";
+        test_statement = "The right male kept the female purple.";
+      } else if (condition == 13) {
         structure = "reversible";
         first_object = "right";
         test_clip = test_right;
         learn_clip_left = "reversible_learning_left.html";
         learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "trigger_first";
+        test_statement = "The right male turned the female purple.";
+      } else if (condition == 14) {
+        structure = "reversible";
+        first_object = "right";
+        test_clip = test_right;
+        learn_clip_left = "reversible_learning_left.html";
+        learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "trigger_second";
+        test_statement = "The left male turned the female purple.";
+      } else if (condition == 15) {
+        structure = "reversible";
+        first_object = "right";
+        test_clip = test_right;
+        learn_clip_left = "reversible_learning_left.html";
+        learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "maintainer_first";
+        test_statement = "The right male kept the female purple.";
+      } else if (condition == 16) {
+        structure = "reversible";
+        first_object = "right";
+        test_clip = test_right;
+        learn_clip_left = "reversible_learning_left.html";
+        learn_clip_right = "reversible_learning_right.html";
+        test_statement_type = "maintainer_second";
+        test_statement = "The left male kept the female purple.";
       };
-	    jsPsych.data.addProperties({desktop_conf: data.response.DesktopConf, attent_conf: data.response.AttentConf, intro_check: data.response.Intro_Clip, structure: structure, first_object: first_object, test_clip: test_clip});
+	    jsPsych.data.addProperties({desktop_conf: data.response.DesktopConf, attent_conf: data.response.AttentConf, intro_check: data.response.Intro_Clip, 
+        structure: structure, first_object: first_object, test_clip: test_clip,
+      test_statement_type: test_statement_type, test_statement: test_statement});
       console.log(structure, first_object, learn_clip_left, learn_clip_right, illu_pic);
     },
   preamble: `
@@ -371,7 +477,7 @@ var instruction_test = {
     stimulus:[
     `
     <p>
-      On the next screen, we'll show you the final animation. Please make sure that you watch it thoroughly before you answer the test questions.
+      On the next screen, we'll show you the final animation. Please make sure that you watch it thoroughly before you answer the test question.
     </p>
     `],
     choices: ['Continue']
@@ -387,10 +493,7 @@ var likert_scale_test = [
 var test = {
   type: jsPsychSurveyLikert,
   questions: [
-    {prompt: "The left male made the female turn purple.", name: 'left_caused', labels: likert_scale_test, required: true},
-    {prompt: "The right male made the female turn purple.", name: 'right_caused', labels: likert_scale_test, required: true},
-    {prompt: "The left male kept the female purple.", name: 'left_maintained', labels: likert_scale_test, required: true},
-    {prompt: "The right male kept the female purple.", name: 'right_maintained', labels: likert_scale_test, required: true},
+    {prompt: function() {return test_statement}, name: 'statement_rating', labels: likert_scale_test, required: true},
   ],
   randomize_question_order: true,
   preamble: function() {
@@ -401,12 +504,11 @@ var test = {
           <iframe src="img/`+test_clip+`" width="1100" height="700" title="learn right"></iframe>
         </p>
 
-        <p><b>How adequate is each of the following sentences to describe what happened in the clip you've just seen?</b></p>
+        <p><b>How adequate is the following sentence to describe what happened in the clip you've just seen?</b></p>
     `
   },
   on_finish: function(data){
-	  jsPsych.data.addProperties({left_caused_rating: data.response.left_caused, right_caused_rating: data.response.right_caused, 
-      left_maintained_rating: data.response.left_maintained, right_maintained_rating: data.response.right_maintained});
+	  jsPsych.data.addProperties({statement_rating: data.response.statement_rating});
   },
 };
 
