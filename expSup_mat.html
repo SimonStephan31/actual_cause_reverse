@@ -402,9 +402,8 @@ href="SuppStudy/animations_squids.zip">here</a>.</p>
 subjects in each of the 8 theoretically relevant conditions (including
 the “side” counterbalancing factor, there were 16 conditions in
 total).</p>
-<pre class="r"><code>library(pwr)</code></pre>
-<pre><code>## Warning: Paket &#39;pwr&#39; wurde unter R Version 4.2.3 erstellt</code></pre>
-<pre class="r"><code>pwr.t.test(n = 30, sig.level = 0.05, power = 0.8, type = c(&quot;two.sample&quot;), alternative = &quot;greater&quot;)</code></pre>
+<pre class="r"><code>library(pwr)
+pwr.t.test(n = 30, sig.level = 0.05, power = 0.8, type = c(&quot;two.sample&quot;), alternative = &quot;greater&quot;)</code></pre>
 <pre><code>## 
 ##      Two-sample t test power calculation 
 ## 
@@ -492,8 +491,10 @@ knitted/ compiled R-Markdown</a> (web view of analysis)</li>
 <div id="particiapnts" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> Particiapnts</h2>
 <p>For details about the sample size demographics, see the analysis
-script <a
-href="SuppStudy/data_and_analyses/Exp_Analysis.html">here</a>.</p>
+script <a href="SuppStudy/data_and_analyses/Exp_Analysis.html">here</a>.
+The study employed the same inclusion and exclusion criteria as the
+previous experiments. 22 participants failed at least one of the control
+questions, which is why their data were excluded from all analyses.</p>
 </div>
 <div id="design-materials-and-procedure" class="section level2"
 number="5.2">
