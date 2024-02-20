@@ -230,6 +230,8 @@ g2
 #ggsave("results_dist.pdf",width=12,height=5)
 ```
 
+# Analyses 
+
 ## Mixed ANOVA 
 
 ```{r}
@@ -360,15 +362,30 @@ Planned contrasts in the list above are "first caused - second caused" in each r
 
 Get effect standardized effect sizes for the contrasts
 
+First get the SDs that need to be pooled (and also the correlations between measures for the within-comparisons)
+
 ```{r}
-# using the d.dep.t.avg function from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
+library(dplyr)
+
+tdata_long %>%
+  group_by(structure, statement) %>%
+  summarise_at(vars(rating), list(name=sd))
+```
+
+```{r}
+library(dplyr)
+
+tdata %>%
+  group_by(structure) %>%
+  summarize(cor=cor(first_caused_rating, second_caused_rating))
+```
+
+```{r}
+# using the functions from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
 
 library(MOTE)
 
-# from the contrast outputs above, get the SDs for pre and post. 
-
 # irreversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
 
 #structure    statement          lsmean    SE df lower.CL upper.CL
 # irreversible first..caused        9.62 0.131 98    9.361     9.88
@@ -376,21 +393,23 @@ library(MOTE)
 
 
 
-stats <- d.dep.t.avg(
+stats <- d.dep.t.rm(
   m1 = 9.62,
   m2 = 1.16,
-  sd1 = 0.131 * sqrt(100),
-  sd2 = 0.420 * sqrt(100),
-  n = 100,
-  a = 0.05
+  sd1 = 1.1228608,
+  sd2 = 2.4773257,
+  n = 50,
+  a = 0.05,
+  r = -0.3371902
 )
 
 stats$estimate
 ```
+
+
 ```{r}
 
 # reversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
 
 #structure    statement          lsmean    SE df lower.CL upper.CL
 # reversible   first..caused        9.80 0.131 98    9.541    10.06
@@ -398,13 +417,14 @@ stats$estimate
 
 
 
-stats <- d.dep.t.avg(
+stats <- d.dep.t.rm(
   m1 = 9.80,
   m2 = 1.86,
-  sd1 = 0.131 * sqrt(100),
-  sd2 = 0.420 * sqrt(100),
-  n = 100,
-  a = 0.05
+  sd1 = 0.6700594,
+  sd2 = 3.3867087,
+  n = 50,
+  a = 0.05,
+  r = -0.2194333	
 )
 
 stats$estimate
@@ -430,17 +450,20 @@ Get effect size
 ```{r}
 
 #structure    statement          lsmean    SE df lower.CL upper.CL
+#reversible   second..maintained   7.94 0.485 98    6.978     8.90
 #irreversible second..maintained   3.60 0.485 98    2.638     4.56
-# reversible   second..maintained   7.94 0.485 98    6.978     8.90
 
+#SDs
+#reversible	second \nmaintained	3.2602116
+#irreversible	second \nmaintained	3.5856858	
 
-
-stats <- d.dep.t.avg(
+stats <- d.ind.t(
   m1 = 7.94,
   m2 = 3.60,
-  sd1 = 0.485 * sqrt(100),
-  sd2 = 0.485 * sqrt(100),
-  n = 100,
+  sd1 = 3.2602116,
+  sd2 = 3.5856858,
+  n1 = 50,
+  n2 = 50,
   a = 0.05
 )
 

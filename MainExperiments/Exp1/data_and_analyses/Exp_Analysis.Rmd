@@ -247,39 +247,57 @@ confint(s, level = 0.95)
 ```
 First cause receives higher ratings in both reversibility conditions. 
 
-Get effect standardized effect sizes for the contrasts
+Get standardized effect sizes for the contrasts
+
+First get the SDs that need to be pooled (and the correlation between measures for the within-tests)
 
 ```{r}
-# using the d.dep.t.avg function from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
+library(dplyr)
+
+tdata_long_original %>%
+  group_by(structure, entity) %>%
+  summarise_at(vars(rating), list(name=sd))
+```
+
+
+```{r}
+tdata_original %>%
+  group_by(structure, test_queries) %>%
+  summarize(cor=cor(first_caused_rating, second_caused_rating))
+```
+
+
+```{r}
+# using the functions from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
 
 library(MOTE)
 
-# from the contrast outputs above, get the SDs for pre and post. 
-
 # irreversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
-stats <- d.dep.t.avg(
+stats <- d.dep.t.rm(
   m1 = 6.80,
   m2 = 1.36,
-  sd1 = 0.464 * sqrt(50),
-  sd2 = 0.596 * sqrt(50),
-  n = 50,
-  a = 0.05
+  sd1 = 2.254625,
+  sd2 = 2.23383,
+  n = 25,
+  a = 0.05,
+  r = -0.5063090	
 )
 
 stats$estimate
+
 ```
 
 ```{r}
 # reversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
-stats <- d.dep.t.avg(
+
+stats <- d.dep.t.rm(
   m1 = 6.92,
   m2 = 3.24,
-  sd1 = 0.464 * sqrt(50),
-  sd2 = 0.596 * sqrt(50),
-  n = 50,
-  a = 0.05
+  sd1 = 2.379075,
+  sd2 = 3.573980,
+  n = 25,
+  a = 0.05,
+  r = -0.3798763
 )
 
 stats$estimate
@@ -490,16 +508,38 @@ The planned contrasts from this list are "first caused - second caused" in each 
 
 Get effect sizes for the relevant contrasts
 
+First get the SDs that need to be pooled (and the correlation between the measures included in within-comparisons)
+
+```{r}
+library(dplyr)
+
+tdata_long_novel %>%
+  group_by(structure, entity) %>%
+  summarise_at(vars(rating), list(name=sd))
+```
+
+```{r}
+library(dplyr)
+
+tdata_novel %>%
+  group_by(structure, test_queries) %>%
+  summarize(cor=cor(first_caused_rating, second_caused_rating))
+```
+
+
+
+
+
 ```{r}
 # irreversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
-stats <- d.dep.t.avg(
+stats <- d.dep.t.rm(
   m1 = 7.70,
   m2 = 0.76,
-  sd1 = 0.213 * sqrt(100),
-  sd2 = 0.380 * sqrt(100),
-  n = 100,
-  a = 0.05
+  sd1 = 1.182353,
+  sd2 = 2.036002,
+  n = 50,
+  a = 0.05,
+  r = -0.1492076
 )
 
 stats$estimate
@@ -507,14 +547,14 @@ stats$estimate
 
 ```{r}
 # reversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
-stats <- d.dep.t.avg(
+stats <- d.dep.t.rm(
   m1 = 7.44,
   m2 = 1.94,
-  sd1 = 0.213 * sqrt(100),
-  sd2 = 0.380 * sqrt(100),
-  n = 100,
-  a = 0.05
+  sd1 = 0.213 * sqrt(50),
+  sd2 = 0.380 * sqrt(50),
+  n = 50,
+  a = 0.05,
+  r = -0.4834880
 )
 
 stats$estimate
@@ -526,13 +566,14 @@ In the paper I also say that maintainer ratings for the first cause are higher i
 # structure    entity             lsmean    SE df lower.CL upper.CL
 # irreversible first..maintained    2.74 0.464 98  1.81965     3.66
 # reversible   first..maintained    5.44 0.464 98  4.51965     6.36
- 
-stats <- d.dep.t.avg(
+
+stats <- d.ind.t(
   m1 = 5.44,
   m2 = 2.74,
-  sd1 = 0.464 * sqrt(100),
-  sd2 = 0.464 * sqrt(100),
-  n = 100,
+  sd1 = 1.774651,
+  sd2 = 1.182353,
+  n1 = 50,
+  n2 = 50,
   a = 0.05
 )
 
@@ -565,15 +606,26 @@ Get a d value for this one too:
 # reversible   second..maintained   5.12 0.471 98  4.18472     6.06
 
 
-stats <- d.dep.t.avg(
+#SDs
+#irreversible	first \ncaused	1.182353		
+#irreversible	second \ncaused	2.036002		
+#irreversible	first \nmaintained	3.427440		
+#irreversible	second \nmaintained	3.365855		
+#reversible	first \ncaused	1.774651		
+#reversible	second \ncaused	3.203378		
+#reversible	first \nmaintained	3.124361		
+#reversible	second \nmaintained	3.298979
+
+
+stats <- d.ind.t(
   m1 = 5.12,
   m2 = 2.24,
-  sd1 = 0.471 * sqrt(100),
-  sd2 = 0.471 * sqrt(100),
-  n = 100,
+  sd1 = 3.298979,
+  sd2 = 3.365855,
+  n1 = 50,
+  n2 = 50,
   a = 0.05
 )
 
 stats$estimate
 ```
-

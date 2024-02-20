@@ -223,7 +223,7 @@ g2
 #ggsave("results_dist.svg",width=12,height=5)
 #ggsave("results_dist.pdf",width=12,height=5)
 ```
-
+# Analyses
 
 ## Mixed ANOVA 
 
@@ -353,29 +353,49 @@ The planned contrasts from the list above are " first..caused - second..caused" 
 
 Get effect standardized effect sizes for the contrasts
 
+First get the SDs that need to be pooled (and also the correlations between measures for the within-comparisons)
+
 ```{r}
-# using the d.dep.t.avg function from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
+library(dplyr)
+
+tdata_long %>%
+  group_by(structure, entity) %>%
+  summarise_at(vars(rating), list(name=sd))
+```
+
+
+```{r}
+library(dplyr)
+
+tdata %>%
+  group_by(structure) %>%
+  summarize(cor=cor(first_obj_caused_rating, second_obj_caused_rating))
+```
+
+```{r}
+# using the functions from the MOTE package (see https://matthewbjane.quarto.pub/guide-to-effect-sizes-and-confidence-intervals/Standardized-Mean-Differences.html#sec-repeated-measures-drm)
 
 library(MOTE)
 
-# from the contrast outputs above, get the SDs for pre and post. 
 
 # irreversible condition
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
 
 #structure    entity             lsmean    SE df lower.CL upper.CL
 # irreversible first..caused        9.64 0.178 98    9.286     9.99
 # irreversible second..caused       0.92 0.408 98    0.110     1.73
 
+#Cor
+#irreversible	-0.2529154			
+#reversible	-0.3145000	
 
-
-stats <- d.dep.t.avg(
+stats <- d.dep.t.rm(
   m1 = 9.64,
   m2 = 0.92,
-  sd1 = 0.178 * sqrt(100),
-  sd2 = 0.408 * sqrt(100),
-  n = 100,
-  a = 0.05
+  sd1 = 0.875051,
+  sd2 = 1.700420,
+  n = 50,
+  a = 0.05,
+  r = -0.2529154
 )
 
 stats$estimate
@@ -383,19 +403,24 @@ stats$estimate
 
 ```{r}
 # reversible condition 
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
 
 #structure    entity             lsmean    SE df lower.CL upper.CL
 # reversible   first..caused        9.40 0.178 98    9.046     9.75
 # reversible   second..caused       2.74 0.408 98    1.930     3.55
 
-stats <- d.dep.t.avg(
+#Cor
+#irreversible	-0.2529154			
+#reversible	-0.3145000	
+
+
+stats <- d.dep.t.rm(
   m1 = 9.40,
   m2 = 2.74,
-  sd1 = 0.178 * sqrt(100),
-  sd2 = 0.408 * sqrt(100),
-  n = 100,
-  a = 0.05
+  sd1 = 1.551826,
+  sd2 = 3.713242,
+  n = 50,
+  a = 0.05,
+  r = -0.3145000
 )
 
 stats$estimate
@@ -419,19 +444,21 @@ The relevant contrast is: "second..maintained irreversible - second..maintained 
 Get effect size: 
 
 ```{r}
-# reversible condition 
-# sds required for function can be obtained by multiplying the SE with the square root of the sample size
-
 #structure    entity             lsmean    SE df lower.CL upper.CL
 #irreversible second..maintained   3.32 0.409 98    2.508     4.13
 #reversible   second..maintained   9.36 0.409 98    8.548    10.17
 
-stats <- d.dep.t.avg(
+#SDs
+#irreversible	second \nmaintained	3.661381
+#reversible	second \nmaintained	1.826785	
+
+stats <- d.ind.t(
   m1 = 9.36,
   m2 = 3.32,
-  sd1 = 0.409 * sqrt(100),
-  sd2 = 0.409 * sqrt(100),
-  n = 100,
+  sd1 = 1.826785,
+  sd2 = 3.661381,
+  n1 = 50,
+  n2 = 50,
   a = 0.05
 )
 
